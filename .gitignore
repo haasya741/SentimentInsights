@@ -1,0 +1,23 @@
+# Ignore Snowflake credentials and environment variables
+*.env
+
+# Ignore virtual environment directories
+venv/
+env/
+ENV/
+
+# Ignore Python bytecode files
+*.pyc
+__pycache__/
+
+# Ignore any log files generated during execution
+*.log
+# Ignore models
+*.h5
+*.joblib
+# Ignore any compiled Python files
+*.pyc
+*.pyo
+faiss_index
+cpg_index
+data

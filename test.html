@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .teal-section {
+            background-color: #008080; 
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-section {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .teal-section h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            width: 400px;
+        }
+
+        .btn-teal {
+            background-color: #008080; 
+            border-color: #008080;
+        }
+
+        .btn-teal:hover {
+            background-color: #636666; 
+            border-color: #848888;
+        }
+
+        .upload-section {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .upload-box {
+            border: 2px dashed #006666;
+            border-radius: 10px;
+            padding: 50px;
+            text-align: center;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .upload-box img {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+
+        .upload-box h2 {
+            color: #13a6e4;
+            margin-bottom: 20px;
+        }
+
+        .upload-box p {
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .progress {
+            width: 100%;
+            height: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 400px; 
+        }
+
+        .btn-container .btn {
+            width: 48%; /
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6 teal-section">
+                <div>
+                    <img src="static/teal_logo.png" alt="Teal Logo" width="100" />
+                    <h1>Teal</h1>
+                    <p>Automatic Code Classifier</p>
+                </div>
+            </div>
+            <div class="col-md-6"> 
+                <div class="form-section">
+                    <div class="upload-section">
+                        <h2 class="mb-4">Upload file</h2>
+                        <div class="upload-box">
+                            <img src="/static/upload icon.jpg" alt="Upload Icon" />
+                            <h2>FILE UPLOAD</h2>
+                            <p>
+                                DRAG and DROP or
+                                <a
+                                    href="#"
+                                    onclick="document.getElementById('file-upload').click(); return false;"
+                                    >browse your files</a
+                                >
+                            </p>
+                            <p>*csv files only</p>
+                            <input
+                                type="file"
+                                class="form-control"
+                                id="file-upload"
+                                style="display: none"
+                            />
+
+                            
+                            <div class="btn-container">
+                                <button class="btn btn-teal text-white btn-lg" type="button">Upload</button>
+                                <button class="btn btn-secondary text-white btn-lg" type="button" onclick="javascript:window.location='/'">Go Back</button>
+                            </div>
+
+                            <div id="file-info" style="display: none">
+                                <p id="file-name"></p>
+                                <div class="progress">
+                                    <div
+                                        class="progress-bar progress-bar-striped progress-bar-animated"
+                                        role="progressbar"
+                                        aria-valuenow="0"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                        style="width: 0%"
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document
+            .getElementById("file-upload")
+            .addEventListener("change", function (event) {
+                const file = event.target.files[0];
+                if (file) {
+                    document.getElementById("file-name").textContent = file.name;
+                    document.getElementById("file-info").style.display = "block";
+                    uploadFile(file);
+                }
+            });
+
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "/upload", true);
+
+            xhr.upload.onprogress = function (event) {
+                if (event.lengthComputable) {
+                    const percentComplete = (event.loaded / event.total) * 100;
+                    const progressBar = document.querySelector(".progress-bar");
+                    progressBar.style.width = percentComplete + "%";
+                    progressBar.setAttribute("aria-valuenow", percentComplete);
+                    document.querySelector(".progress").style.display = "block";
+                }
+            };
+
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    console.log("File uploaded successfully.");
+                    alert("File uploaded successfully.");
+                } else {
+                    console.error("Error uploading file.");
+                    alert("Error uploading file.");
+                }
+            };
+
+            xhr.send(formData);
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

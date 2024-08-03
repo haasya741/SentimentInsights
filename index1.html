@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teal - GL Code Classifier</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .teal-section {
+            background-color: #008080; 
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .form-section {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .teal-section h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            width: 400px;
+        }
+
+        .btn-teal {
+            background-color: #008080; 
+            border-color: #008080;
+        }
+
+        .btn-teal:hover {
+            background-color: #006666; 
+            border-color: #006666;
+        }
+
+        .navbar-toggler {
+            background-color: transparent; 
+            border: none;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+
+        .offcanvas {
+            background-color: #f8f9fa; 
+        }
+
+    </style>
+</head>
+<body>
+   
+    <nav class="navbar navbar-light">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">Menu</h5>
+                    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/train.html" id="train-link">Train</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/test.html" id="test-link">Test</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-6 teal-section">
+                <div>
+                    <img src="teal_logo.png" alt="Teal Logo" width="100">
+                    <h1>Teal</h1>
+                    <p>Automatic GL Code Classifier</p>
+                </div>
+            </div>
+            <div class="col-md-6 form-section">
+                <div class="form-container">
+                    <h2 class="mb-4">Enter details</h2>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Item Description</label>
+                        <input type="text" class="form-control" id="description" placeholder="Enter item description">
+                    </div>
+                    <div class="mb-3">
+                        <label for="method" class="form-label">Method</label>
+                        <select class="form-select" id="method">
+                            <option value="tfidf_svm">TF-IDF with SVM</option>
+                            <option value="embedding_lstm">Embedding with LSTM</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-teal btn-lg btn-block text-white" onclick="predict()">Submit</button>
+                    <div id="result" class="mt-3 alert alert-info d-none"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function predict() {
+            const description = document.getElementById('description').value;
+            const method = document.getElementById('method').value;
+            const resultElement = document.getElementById('result');
+            resultElement.classList.remove('d-none');
+            resultElement.classList.add('d-block');
+            resultElement.innerHTML = `predicting...`;
+            fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    description: description,
+                    method: method
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultElement.innerHTML = `
+                    <h3>Result:</h3>
+                    <table class="table table-border">
+                        <thead>
+                            <tr>
+                            <th scope="col">HSN Code</th>
+                            <th scope="col">Confidence</th>
+                            <th scope="col">GL Code</th>
+                            <th scope="col">Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                            <td scope="col">${data.hsn_prediction}</td>
+                            <td scope="col text-end">${(data.hsn_confidence * 100).toFixed(2)}%</td>
+                            <td scope="col">${data.gl_prediction}</td>
+                            <td scope="col text-end">${(data.gl_confidence * 100).toFixed(2)}%</td>
+                            </tr>
+                        </tbody>
+                        </table>
+                `;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultElement.innerHTML = `
+                    <div class="alert alert-danger" role="alert">
+                        An error occurred. Please try again later.
+                    </div>
+                `;
+            });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

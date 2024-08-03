@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+pandas
+nltk
+scikit-learn
+tensorflow
+black
+# these are for sentence similarity
+# needs numpy as well but since it is above, have skipped it
+langchain
+langchain_community
+sentence-transformers
+faiss-cpu
+numpy
+langchain-huggingface
