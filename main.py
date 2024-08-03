@@ -145,18 +145,4 @@ def main():
         test_df = preprocess_data(test_df, "Item_Description")
         # describe_data(train_df, 'Item_Description', args.type)
         model_path = args.type + "_model"
-        if args.method == "embedding_lstm":
-            model_path += ".h5"
-        else:
-            model_path += ".joblib"
-        load_and_evaluate_model(
-            model_path, test_df, "Item_Description", args.type, method=args.method
-        )
-    else:
-        import uvicorn
 
-        uvicorn.run(app, host="0.0.0.0", port=8000)
-
-
-if __name__ == "__main__":
-    main()
